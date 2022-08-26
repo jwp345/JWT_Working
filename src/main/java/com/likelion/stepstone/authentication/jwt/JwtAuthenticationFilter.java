@@ -3,6 +3,7 @@ package com.likelion.stepstone.authentication.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.likelion.stepstone.authentication.PrincipalDetails;
 
+import com.likelion.stepstone.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,12 +32,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     System.out.println("JwtAuthenticationFilter : 로그인 시도중");
 
 
-      ObjectMapper om = new ObjectMapper();
-
-//      String msgBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
-
-
-//      LoginDto user = om.readValue(request.getInputStream(), LoginDto.class);
       System.out.println(request.getParameter("userId") + " " + request.getParameter("password"));
 
       UsernamePasswordAuthenticationToken authenticationToken =
@@ -69,6 +64,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     String jwtToken = JwtTokenProvider.provide(principalDetails);
 
-    response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+jwtToken);
+    response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+  }
+
+  @Override
+  protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    response.sendRedirect("/login-error");
   }
 }

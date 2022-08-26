@@ -64,9 +64,19 @@ public class AuthController {
     return "admin";
   }
 
-  @GetMapping("/loginForm")
-  public String loginForm() {
+//  @GetMapping("/loginForm")
+//  public String loginForm() {
+//    return "loginForm";
+//  }
+
+  @GetMapping("/login")
+  public String login() {
     return "loginForm";
   }
 
+  @GetMapping("/login-error")
+  public String loginError(Model model) {
+    model.addAttribute("loginError", true);
+    return "loginForm";
+  }
 }
