@@ -1,0 +1,81 @@
+package com.likelion.stepstone.user.model;
+
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@ToString
+@Table(name = "users")
+public class UserEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_cid")
+    private Long cid;
+
+    //사용자Id를 해싱한다.
+    @Column(name = "user_id", length = 50, unique = true)
+    @Setter
+    private String userId;
+
+    @Setter
+    @Column(name = "name")
+    private String name; // 실명
+
+    @Setter
+    @Column(name = "password")
+    private String password;
+
+    @Setter
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Setter
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    @Setter
+    @Column(name = "roles")
+    private String roles;
+
+    // enum으로 하는 방법도 있나?
+    public List<String> getRoleList(){
+        if(this.roles.length() > 0){
+            return Arrays.asList(this.roles.split(","));
+        }
+        return new ArrayList<>(); // null 을 리턴 안해주기 위함.
+    }
+
+    public static UserEntity toEntity(UserDto dto) {
+        UserEntity entity = UserEntity.builder()
+                .name(dto.getName())
+                .password(dto.getPassword())
+                .createdAt(dto.getCreatedAt())
+                .updatedAt(dto.getUpdatedAt())
+                .build();
+
+        return entity;
+    }
+
+    public void login(PasswordEncoder passwordEncoder, String credentials) {
+        if (!passwordEncoder.matches(credentials, password))
+            throw new IllegalArgumentException("Bad credential");
+    }
+
+}
