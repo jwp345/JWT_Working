@@ -1,49 +1,35 @@
 package com.likelion.stepstone.authentication;
 
-import com.likelion.stepstone.authentication.jwt.JwtProperties;
-import com.likelion.stepstone.user.UserRepository;
+import com.likelion.stepstone.user.UserService;
 import com.likelion.stepstone.user.model.UserEntity;
 import com.likelion.stepstone.user.model.UserVo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.Optional;
+
+
 @Controller
 public class AuthController {
 
-  private final BCryptPasswordEncoder bCryptPasswordEncoder;
-  private final UserRepository userRepository;
+  private final UserService userService;
 
-  AuthController(BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository) {
-    this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    this.userRepository = userRepository;
+  AuthController(UserService userService) {
+    this.userService = userService;
   }
 
-  @GetMapping("/home")
-  @ResponseBody
-  public String home() {
-    return "<h1>home<h1>";
-  }
-
-  @PostMapping("token")
-  @ResponseBody
-  public String token() {
-    return "<h1>token<h1>";
+  @GetMapping("join")
+  public String join() {
+    return "joinForm";
   }
 
   @PostMapping("join")
-  @ResponseBody
-  public String join(@RequestBody UserVo user) {
-    UserEntity userEntity = new UserEntity();
-    userEntity.setName(user.getName());
-    userEntity.setRoles("ROLE_USER");
-    userEntity.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-    userEntity.setUserId(user.getUserId());
-    userRepository.save(userEntity);
-
-    return "join success";
+  public String join(UserVo userVo) {
+    userService.join(userVo);
+    return "loginForm";
   }
 
   // user, manager, admin 권한만 접근 가능
@@ -64,15 +50,29 @@ public class AuthController {
     return "admin";
   }
 
-  @GetMapping("/loginForm")
-  public String loginForm() {
-    return "loginForm";
+  @GetMapping("/oauth/login")
+  public String oauthLogin(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    UserEntity userEntity = principalDetails.getUser();
+
+    if(!userEntity.isLoginBefore()) {
+      return "oauthJoinForm";
+    }
+    return "redirect:/";
   }
 
-//  @GetMapping("/login")
-//  public String login() {
-//    return "loginForm";
-//  }
+  @PostMapping("/oauth/login")
+  public String oauthLogin(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam String role) {
+    UserEntity userEntity = principalDetails.getUser();
+    userEntity.setRoles(role);
+    userEntity.setLoginBefore(true);
+    userService.save(userEntity);
+    return "redirect:/";
+  }
+
+  @GetMapping("/login")
+  public String login() {
+    return "loginForm";
+  }
 
   @GetMapping("/login-error")
   public String loginError(Model model) {

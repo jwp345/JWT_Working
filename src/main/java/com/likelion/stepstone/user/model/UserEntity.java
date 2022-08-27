@@ -51,6 +51,10 @@ public class UserEntity {
     private LocalDateTime updatedAt;
 
     @Setter
+    @Column(name = "login_before")
+    private boolean loginBefore;
+
+    @Setter
     @Column(name = "roles")
     private String roles;
 
@@ -64,8 +68,10 @@ public class UserEntity {
 
     public static UserEntity toEntity(UserDto dto) {
         UserEntity entity = UserEntity.builder()
+                .userId(dto.getUserId())
                 .name(dto.getName())
                 .password(dto.getPassword())
+                .roles(dto.getRole())
                 .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())
                 .build();
@@ -73,9 +79,13 @@ public class UserEntity {
         return entity;
     }
 
-    public void login(PasswordEncoder passwordEncoder, String credentials) {
-        if (!passwordEncoder.matches(credentials, password))
-            throw new IllegalArgumentException("Bad credential");
+    public static UserEntity toEntity(UserVo vo) {
+        UserEntity entity = UserEntity.builder()
+                .userId(vo.getUserId())
+                .name(vo.getName())
+                .password(vo.getPassword())
+                .roles(vo.getRole())
+                .build();
+        return entity;
     }
-
 }

@@ -15,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserDto {
 
+    @Setter
     private String userId;
 
     @Setter
@@ -43,4 +44,5 @@ public class UserDto {
 
         return dto;
     }
+
 }

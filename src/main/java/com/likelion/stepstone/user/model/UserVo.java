@@ -17,6 +17,8 @@ public class UserVo {
 
     private final String password;
 
+    private final String role;
+
 //    public static UserVo toVo(UserDto dto) {
 //        UserVo toVo = UserVo.builder()
 //                .userId(dto.getUserId())

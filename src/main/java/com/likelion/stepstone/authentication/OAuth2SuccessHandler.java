@@ -26,6 +26,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     cookie.setPath("/");
     response.addCookie(cookie);
     response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
-    response.sendRedirect("/");
+    response.sendRedirect("/oauth/login");
   }
 }

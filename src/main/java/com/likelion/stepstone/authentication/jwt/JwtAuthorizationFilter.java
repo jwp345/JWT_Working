@@ -45,7 +45,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     try {
       token = Arrays.stream(request.getCookies())
               .filter(cookie -> cookie.getName().equals(JwtProperties.HEADER_STRING)).findFirst().map(Cookie::getValue)
-              .orElse(null).replace(JwtProperties.TOKEN_PREFIX,"");;
+              .orElse("Invalid").replace(JwtProperties.TOKEN_PREFIX,"");
     } catch (Exception e) {
       throw e;
     }
@@ -55,7 +55,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     // JWT Token을 검증을 해서 정상적인 사용자인지 확인
 
     // header 확인
-    if (token == null) {
+    if (token.equals("Invalid")) {
       chain.doFilter(request, response);
       return;
     }
@@ -66,7 +66,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     // 서명이 정상적으로 됨.
     if (userId != null) {
       UserEntity userEntity = userRepository.findByUserId(userId).orElseGet(() -> {
-        Arrays.stream(request.getCookies()).forEach(cookie -> cookie.setMaxAge(0));
+        Arrays.stream(request.getCookies()).forEach(cookie -> {
+          cookie.setMaxAge(0);
+          response.addCookie(cookie);
+        });
         return null;
       }); // 아이디가 없을 시 쿠키를 모두 삭제하고 null값 반환
 

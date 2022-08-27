@@ -31,11 +31,11 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
   // 구글로 부터 받은 userRequest 데이터에 대한 후처리되는 함수
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-    System.out.println("getClientRegistration : " + userRequest.getClientRegistration());
-    System.out.println("getAccessToken : " + userRequest.getAccessToken());
+//    System.out.println("getClientRegistration : " + userRequest.getClientRegistration());
+//    System.out.println("getAccessToken : " + userRequest.getAccessToken());
 
     OAuth2User oAuth2User = super.loadUser(userRequest);
-    System.out.println("getAttributes : " + oAuth2User.getAttributes());
+//    System.out.println("getAttributes : " + oAuth2User.getAttributes());
 
     OAuth2UserInfo oAuth2UserInfo = null;
     if(userRequest.getClientRegistration().getRegistrationId().equals("google")) {
@@ -62,11 +62,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             .roles(role)
             .build()));
 
-    PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
-
-    String jwtToken = JwtTokenProvider.provide(principalDetails);
-
-    System.out.println("Bearer " + jwtToken);
     return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
   }
 
