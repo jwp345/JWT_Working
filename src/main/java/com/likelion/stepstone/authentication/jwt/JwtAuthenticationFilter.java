@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
     System.out.println("JwtAuthenticationFilter : 로그인 시도중");
 
-
       System.out.println(request.getParameter("userId") + " " + request.getParameter("password"));
 
       UsernamePasswordAuthenticationToken authenticationToken =
@@ -67,7 +66,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     cookie.setMaxAge(JwtProperties.EXPIRATION_TIME);
     cookie.setPath("/");
     response.addCookie(cookie);
-    response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+//    response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+    response.sendRedirect("/");
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.likelion.stepstone.config;
 
+import com.likelion.stepstone.authentication.OAuth2SuccessHandler;
 import com.likelion.stepstone.authentication.PrincipalOauth2UserService;
 import com.likelion.stepstone.authentication.jwt.JwtAuthenticationFilter;
 import com.likelion.stepstone.authentication.jwt.JwtAuthorizationFilter;
@@ -26,10 +27,13 @@ public class SecurityConfig {
 
   private final PrincipalOauth2UserService principalOauth2UserService;
 
-  SecurityConfig(CorsConfig corsConfig, UserRepository userRepository, PrincipalOauth2UserService principalOauth2UserService) {
+  private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+  SecurityConfig(CorsConfig corsConfig, UserRepository userRepository, PrincipalOauth2UserService principalOauth2UserService, OAuth2SuccessHandler oAuth2SuccessHandler) {
     this.corsConfig = corsConfig;
     this.userRepository = userRepository;
     this.principalOauth2UserService = principalOauth2UserService;
+    this.oAuth2SuccessHandler = oAuth2SuccessHandler;
   }
 
 //  @Bean
@@ -60,7 +64,7 @@ public class SecurityConfig {
                     .access("hasRole('ROLE_ADMIN')")
                     .anyRequest().permitAll())
             .oauth2Login(oauth -> oauth.loginPage("/loginForm")
-                    .successHandler()
+                    .successHandler(oAuth2SuccessHandler)
                     .userInfoEndpoint()
                     .userService(principalOauth2UserService))
             .build();
