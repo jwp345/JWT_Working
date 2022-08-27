@@ -69,4 +69,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     System.out.println("Bearer " + jwtToken);
     return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
   }
+
+
 }

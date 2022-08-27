@@ -1,6 +1,6 @@
 package com.likelion.stepstone.authentication;
 
-import com.likelion.stepstone.authentication.model.LoginDto;
+import com.likelion.stepstone.authentication.jwt.JwtProperties;
 import com.likelion.stepstone.user.UserRepository;
 import com.likelion.stepstone.user.model.UserEntity;
 import com.likelion.stepstone.user.model.UserVo;
@@ -64,15 +64,15 @@ public class AuthController {
     return "admin";
   }
 
-//  @GetMapping("/loginForm")
-//  public String loginForm() {
-//    return "loginForm";
-//  }
-
-  @GetMapping("/login")
-  public String login() {
+  @GetMapping("/loginForm")
+  public String loginForm() {
     return "loginForm";
   }
+
+//  @GetMapping("/login")
+//  public String login() {
+//    return "loginForm";
+//  }
 
   @GetMapping("/login-error")
   public String loginError(Model model) {

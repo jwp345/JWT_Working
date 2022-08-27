@@ -4,22 +4,18 @@ import com.likelion.stepstone.authentication.PrincipalOauth2UserService;
 import com.likelion.stepstone.authentication.jwt.JwtAuthenticationFilter;
 import com.likelion.stepstone.authentication.jwt.JwtAuthorizationFilter;
 import com.likelion.stepstone.user.UserRepository;
+import org.apache.tomcat.util.http.LegacyCookieProcessor;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -36,9 +32,15 @@ public class SecurityConfig {
     this.principalOauth2UserService = principalOauth2UserService;
   }
 
+//  @Bean
+//  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+//    return authenticationConfiguration.getAuthenticationManager();
+//  }
+
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-    return authenticationConfiguration.getAuthenticationManager();
+  public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
+    return (serverFactory) -> serverFactory.addContextCustomizers(
+            (context) -> context.setCookieProcessor(new LegacyCookieProcessor()));
   }
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -57,7 +59,8 @@ public class SecurityConfig {
                     .antMatchers("/api/v1/admin/**")
                     .access("hasRole('ROLE_ADMIN')")
                     .anyRequest().permitAll())
-            .oauth2Login(oauth -> oauth.loginPage("/login")
+            .oauth2Login(oauth -> oauth.loginPage("/loginForm")
+                    .successHandler()
                     .userInfoEndpoint()
                     .userService(principalOauth2UserService))
             .build();

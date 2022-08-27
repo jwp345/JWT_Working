@@ -1,5 +1,6 @@
 package com.likelion.stepstone.config;
 
+import com.likelion.stepstone.authentication.jwt.JwtProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -17,8 +18,10 @@ public class CorsConfig {
     config.addAllowedOrigin("*"); // e.g. http://domain1.com(모든 ip에 응답을 허용하겠다)
     config.addAllowedHeader("*"); // 모든 header에 응답을 허용
     config.addAllowedMethod("*"); // 모든 post, get, put, delete, patch 요청을 허용
+    config.addExposedHeader(JwtProperties.HEADER_STRING);
 
-    source.registerCorsConfiguration("/api/**", config);
+    source.registerCorsConfiguration("/**", config);
+
     return new CorsFilter(source);
   }
 

@@ -1,9 +1,7 @@
 package com.likelion.stepstone.authentication.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.likelion.stepstone.authentication.PrincipalDetails;
 
-import com.likelion.stepstone.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +10,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -64,6 +63,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     String jwtToken = JwtTokenProvider.provide(principalDetails);
 
+    Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+    cookie.setMaxAge(JwtProperties.EXPIRATION_TIME);
+    cookie.setPath("/");
+    response.addCookie(cookie);
     response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
   }
 
