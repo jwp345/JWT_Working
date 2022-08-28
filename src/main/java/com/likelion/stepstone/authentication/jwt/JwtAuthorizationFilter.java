@@ -25,6 +25,8 @@ import java.util.Arrays;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   private final UserRepository userRepository;
+  private final String invalid = "";
+
   public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
     super(authenticationManager);
     this.userRepository = userRepository;
@@ -42,20 +44,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     String token = null;
 
-    try {
-      token = Arrays.stream(request.getCookies())
-              .filter(cookie -> cookie.getName().equals(JwtProperties.HEADER_STRING)).findFirst().map(Cookie::getValue)
-              .orElse("Invalid").replace(JwtProperties.TOKEN_PREFIX,"");
-    } catch (Exception e) {
-      throw e;
-    }
+    token = Arrays.stream(request.getCookies())
+            .filter(cookie -> cookie.getName().equals(JwtProperties.HEADER_STRING)).findFirst().map(Cookie::getValue)
+            .orElse(invalid).replace(JwtProperties.TOKEN_PREFIX,"");
 
     System.out.println("jwtToken : " + token);
 
     // JWT Token을 검증을 해서 정상적인 사용자인지 확인
 
     // header 확인
-    if (token.equals("Invalid")) {
+    if (token.equals(invalid)) {
       chain.doFilter(request, response);
       return;
     }
