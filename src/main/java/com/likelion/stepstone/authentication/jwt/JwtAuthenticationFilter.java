@@ -10,10 +10,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.likelion.stepstone.authentication.CookieUtils.addCookie;
 
 // 스프링 시큐리티에서 UsernamePasswordAuthenticationFilter 가 있음.
 // /login 요청해서 username, password 전송하면 (post)
@@ -62,10 +63,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     String jwtToken = JwtTokenProvider.provide(principalDetails);
 
-    Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
-    cookie.setMaxAge(JwtProperties.EXPIRATION_TIME);
-    cookie.setPath("/");
-    response.addCookie(cookie);
+    addCookie(response, JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken, JwtProperties.EXPIRATION_TIME);
     response.sendRedirect("/");
   }
 

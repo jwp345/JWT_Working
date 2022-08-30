@@ -1,6 +1,5 @@
 package com.likelion.stepstone.config;
 
-import com.likelion.stepstone.authentication.jwt.JwtProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;

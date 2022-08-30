@@ -8,7 +8,6 @@ import com.likelion.stepstone.authentication.provider.OAuth2SuccessHandler;
 import com.likelion.stepstone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
