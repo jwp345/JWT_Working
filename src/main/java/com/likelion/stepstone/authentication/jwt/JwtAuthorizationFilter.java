@@ -42,9 +42,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       return;
     }
 
-    String token = null;
-
-    token = Arrays.stream(request.getCookies())
+    String token = Arrays.stream(request.getCookies())
             .filter(cookie -> cookie.getName().equals(JwtProperties.HEADER_STRING)).findFirst().map(Cookie::getValue)
             .orElse(invalid).replace(JwtProperties.TOKEN_PREFIX,"");
 

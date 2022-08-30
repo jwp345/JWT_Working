@@ -1,13 +1,11 @@
 package com.likelion.stepstone.authentication;
 
 
-import com.likelion.stepstone.authentication.jwt.JwtTokenProvider;
 import com.likelion.stepstone.authentication.provider.GoogleUserInfo;
 import com.likelion.stepstone.authentication.provider.NaverUserInfo;
 import com.likelion.stepstone.authentication.provider.OAuth2UserInfo;
 import com.likelion.stepstone.user.UserRepository;
 import com.likelion.stepstone.user.model.UserEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

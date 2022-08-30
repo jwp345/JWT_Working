@@ -1,11 +1,14 @@
 package com.likelion.stepstone.config;
 
-import com.likelion.stepstone.authentication.OAuth2SuccessHandler;
 import com.likelion.stepstone.authentication.PrincipalOauth2UserService;
 import com.likelion.stepstone.authentication.jwt.JwtAuthenticationFilter;
 import com.likelion.stepstone.authentication.jwt.JwtAuthorizationFilter;
+import com.likelion.stepstone.authentication.provider.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.likelion.stepstone.authentication.provider.OAuth2SuccessHandler;
 import com.likelion.stepstone.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -17,35 +20,26 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
   private final CorsConfig corsConfig;
   private final UserRepository userRepository;
 
+  private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+
   private final PrincipalOauth2UserService principalOauth2UserService;
 
   private final OAuth2SuccessHandler oAuth2SuccessHandler;
-
-  SecurityConfig(CorsConfig corsConfig, UserRepository userRepository, PrincipalOauth2UserService principalOauth2UserService, OAuth2SuccessHandler oAuth2SuccessHandler) {
-    this.corsConfig = corsConfig;
-    this.userRepository = userRepository;
-    this.principalOauth2UserService = principalOauth2UserService;
-    this.oAuth2SuccessHandler = oAuth2SuccessHandler;
-  }
-
-//  @Bean
-//  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-//    return authenticationConfiguration.getAuthenticationManager();
-//  }
 
   @Bean
   public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
     return (serverFactory) -> serverFactory.addContextCustomizers(
             (context) -> context.setCookieProcessor(new LegacyCookieProcessor()));
   }
+
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
@@ -63,10 +57,13 @@ public class SecurityConfig {
                     .antMatchers("/api/v1/admin/**")
                     .access("hasRole('ROLE_ADMIN')")
                     .anyRequest().permitAll())
-            .oauth2Login(oauth -> oauth.loginPage("/login")
-                    .successHandler(oAuth2SuccessHandler)
-                    .userInfoEndpoint()
-                    .userService(principalOauth2UserService))
+            .oauth2Login(config ->
+              config.loginPage("/login")
+                      .authorizationEndpoint(subconfig ->
+                subconfig.authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
+                      .successHandler(oAuth2SuccessHandler)
+                      .userInfoEndpoint()
+                      .userService(principalOauth2UserService))
             .build();
   }
 
