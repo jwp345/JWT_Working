@@ -32,10 +32,4 @@ public class UserService {
     userRepository.save(userEntity);
   }
 
-  public UUID findOrRegister(@NonNull String socialUserId,
-                             @NonNull String socialUserProvider,
-                             @NonNull Map<String, Object> socialUserInfo) {
-    log.info("Looking up or registering social user; id={}; provider={}; info={}", socialUserId, socialUserProvider, socialUserInfo);
-    return UUID.randomUUID();
-  }
 }
