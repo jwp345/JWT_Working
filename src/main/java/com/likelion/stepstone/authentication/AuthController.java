@@ -58,7 +58,6 @@ public class AuthController {
   public String oauthLogin(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal PrincipalDetails principalDetails) {
     UserEntity userEntity = principalDetails.getUser();
 
-    deleteCookie(request, response, JwtProperties.HEADER_STRING);
     String jwtToken = JwtTokenProvider.provide(principalDetails);
     addStrictCookie(response, JwtProperties.HEADER_STRING, jwtToken, JwtProperties.EXPIRATION_TIME / 1000);
     if(!userEntity.isLoginBefore()) {
