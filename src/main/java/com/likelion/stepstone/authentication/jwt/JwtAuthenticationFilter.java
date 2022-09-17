@@ -68,6 +68,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
   @Override
   protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-    response.sendRedirect("/login-error");
+    response.sendRedirect("/login?error=true");
   }
 }
