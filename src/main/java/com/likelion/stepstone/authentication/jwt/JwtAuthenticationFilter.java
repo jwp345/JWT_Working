@@ -28,9 +28,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   // /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-    System.out.println("JwtAuthenticationFilter : 로그인 시도중");
-
-    System.out.println(request.getParameter("userId") + " " + request.getParameter("password"));
 
     UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(request.getParameter("userId"), request.getParameter("password"));
@@ -43,11 +40,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // 4. JWT 토큰을 만들어서 응답해줌.
     Authentication authentication =
             authenticationManager.authenticate(authenticationToken);
-
-    // authenticaion 객체가 session 영역에 저장됨. => 로그인이 되었다는 뜻
-    PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-
-    System.out.println("로그인 완료됨: " + principalDetails.getUser().getUserId());
 
     return authentication;
 

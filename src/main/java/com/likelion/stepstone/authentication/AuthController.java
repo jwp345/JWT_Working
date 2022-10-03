@@ -6,11 +6,10 @@ import com.likelion.stepstone.user.UserService;
 import com.likelion.stepstone.user.model.UserEntity;
 import com.likelion.stepstone.user.model.UserVo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.likelion.stepstone.authentication.CookieUtils.*;
@@ -55,9 +54,8 @@ public class AuthController {
   }
 
   @GetMapping("/oauth/login")
-  public String oauthLogin(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-    UserEntity userEntity = principalDetails.getUser();
-
+  public String oauthLogin(HttpServletResponse response, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    UserEntity userEntity = userService.findById(principalDetails.getUsername());
     String jwtToken = JwtTokenProvider.provide(principalDetails);
     addStrictCookie(response, JwtProperties.HEADER_STRING, jwtToken, JwtProperties.EXPIRATION_TIME / 1000);
     if(!userEntity.isLoginBefore()) {
@@ -68,7 +66,7 @@ public class AuthController {
 
   @PostMapping("/oauth/login")
   public String oauthLogin(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam String role) {
-    UserEntity userEntity = principalDetails.getUser();
+    UserEntity userEntity = userService.findById(principalDetails.getUsername());
     userEntity.setRoles(role);
     userEntity.setLoginBefore(true);
     userService.save(userEntity);

@@ -2,9 +2,11 @@ package com.likelion.stepstone.authentication.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.likelion.stepstone.authentication.PrincipalDetails;
 import com.likelion.stepstone.user.UserRepository;
 import com.likelion.stepstone.user.model.UserEntity;
+import com.likelion.stepstone.user.model.UserVo;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -56,25 +58,19 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       return;
     }
 
-    String userId =
-            JWT.require(Algorithm.HMAC256(JwtProperties.SECRET)).build().verify(token).getClaim("userid").asString();
+    DecodedJWT decodedJWT =
+            JWT.require(Algorithm.HMAC256(JwtProperties.SECRET)).build().verify(token);
 
     // 서명이 정상적으로 됨.
-    if (userId != null) {
-      UserEntity userEntity = userRepository.findByUserId(userId).orElseGet(() -> {
-        Arrays.stream(request.getCookies()).forEach(cookie -> {
-          cookie.setMaxAge(0);
-          response.addCookie(cookie);
-        });
-        return null;
-      }); // 아이디가 없을 시 쿠키를 모두 삭제하고 null값 반환
+    if (decodedJWT != null) {
 
-      if(userEntity == null) {
-        chain.doFilter(request, response);
-        return;
-      }
+      UserVo userVo = UserVo.builder()
+              .userId(decodedJWT.getClaim("userid").asString())
+              .name(decodedJWT.getClaim("name").asString())
+              .role(decodedJWT.getClaim("role").asString())
+              .build();
 
-      PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
+      PrincipalDetails principalDetails = new PrincipalDetails(userVo);
 
       // JwtToken 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.
       Authentication authentication

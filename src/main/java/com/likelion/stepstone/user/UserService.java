@@ -4,6 +4,7 @@ import com.likelion.stepstone.user.model.UserEntity;
 import com.likelion.stepstone.user.model.UserVo;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,4 +33,7 @@ public class UserService {
     userRepository.save(userEntity);
   }
 
+  public UserEntity findById(String userId) {
+    return userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException("아이디를 찾을 수 없습니다."));
+  }
 }

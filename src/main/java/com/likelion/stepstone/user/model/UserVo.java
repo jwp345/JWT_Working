@@ -15,17 +15,18 @@ public class UserVo {
 
     private final String userId;
 
-    private final String password;
-
     private final String role;
 
-//    public static UserVo toVo(UserDto dto) {
-//        UserVo toVo = UserVo.builder()
-//                .userId(dto.getUserId())
-//                .name(dto.getName())
-//                .role(dto.getRole())
-//                .build();
-//
-//        return toVo;
-//    }
+    private final String password;
+
+    public static UserVo toVo(UserEntity userEntity) {
+        UserVo toVo = UserVo.builder()
+                .userId(userEntity.getUserId())
+                .name(userEntity.getName())
+                .role(userEntity.getRoles())
+                .password(userEntity.getPassword())
+                .build();
+
+        return toVo;
+    }
 }

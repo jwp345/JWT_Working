@@ -6,6 +6,7 @@ import com.likelion.stepstone.authentication.provider.NaverUserInfo;
 import com.likelion.stepstone.authentication.provider.OAuth2UserInfo;
 import com.likelion.stepstone.user.UserRepository;
 import com.likelion.stepstone.user.model.UserEntity;
+import com.likelion.stepstone.user.model.UserVo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -52,15 +53,15 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     String role = "ROLE_USER";
     String name = oAuth2UserInfo.getName();
 
-    UserEntity userEntity = userRepository.findByUserId(userId).orElseGet(() ->
+    UserVo userVo = UserVo.toVo(userRepository.findByUserId(userId).orElseGet(() ->
             userRepository.save(UserEntity.builder()
             .userId(userId)
             .password(password)
             .name(name)
             .roles(role)
-            .build()));
+            .build())));
 
-    return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
+    return new PrincipalDetails(userVo);
   }
 
 

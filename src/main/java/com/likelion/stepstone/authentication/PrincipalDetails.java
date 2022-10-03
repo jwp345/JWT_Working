@@ -1,6 +1,6 @@
 package com.likelion.stepstone.authentication;
 
-import com.likelion.stepstone.user.model.UserEntity;
+import com.likelion.stepstone.user.model.UserVo;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,34 +13,32 @@ import java.util.Map;
 @Data
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
-  private final UserEntity user;
+  private final UserVo user;
   private Map<String, Object> attributes;
 
-  public PrincipalDetails(UserEntity user) {
+  public PrincipalDetails(UserVo user) {
     this.user = user;
   }
 
   // OAuth 인증 시 가져오는 정보들
-  public PrincipalDetails(UserEntity user, Map<String, Object> attributes) {
-    this.user = user;
-    this.attributes = attributes;
-  }
+//  public PrincipalDetails(UserVo user, Map<String, Object> attributes) {
+//    this.user = user;
+//    this.attributes = attributes;
+//  }
 
-  public UserEntity getUser() {
+  public UserVo getUser() {
     return user;
-  } // 이거 지워도 되나?
-
-  @Override
-  public Map<String, Object> getAttributes() {
-    return attributes;
   }
+
+//  @Override
+//  public Map<String, Object> getAttributes() {
+//    return attributes;
+//  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     Collection<GrantedAuthority> authorities = new ArrayList<>();
-    user.getRoleList().forEach(r -> {
-      authorities.add(() -> r);
-    });
+    authorities.add(() -> user.getRole());
 
     return authorities;
   }
